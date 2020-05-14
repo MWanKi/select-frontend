@@ -28,3 +28,21 @@ export const Scene = {
     }
   `,
 };
+
+const body = document.querySelector('body');
+const disableScrollClass = 'disable-scroll';
+export const toggleBodyScrollable = (isScrollable: boolean) => {
+  if (body) {
+    isScrollable
+      ? body.classList.add(disableScrollClass)
+      : body.classList.remove(disableScrollClass);
+  }
+};
+
+export const GlobalStyles = css`
+  body {
+    &.${disableScrollClass} {
+      overflow: hidden;
+    }
+  }
+`;

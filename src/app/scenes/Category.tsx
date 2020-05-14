@@ -10,7 +10,7 @@ import { getIdFromLocationSearch, isValidNumber } from 'app/services/category/ut
 import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
 import { getPageQuery } from 'app/services/routing/selectors';
-import { getIsMobile } from 'app/services/commonUI/selectors';
+import SelectDialog from 'app/components/SelectDialog';
 
 const ItemCountPerPage = 24;
 
@@ -26,7 +26,6 @@ const Category: React.FunctionComponent = () => {
   const category = useSelector((state: RidiSelectState) => state.categoriesById[categoryId]);
   const books = useSelector((state: RidiSelectState) => state.booksById);
   const page = useSelector(getPageQuery);
-  const isMobile = useSelector(getIsMobile);
 
   const isValidCategoryId = isValidNumber(categoryId);
   const itemCount = category?.itemCount;
@@ -49,40 +48,28 @@ const Category: React.FunctionComponent = () => {
     }
   }, [categoryId, page]);
 
-  const renderSelectBox = () =>
-    isValidCategoryId ? (
-      <div className="RUISelectBox RUISelectBox-outline Category_SelectBox">
-        <select
-          title="카테고리 선택"
-          className="RUISelectBox_Select"
-          value={categoryId}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            history.push(`/categories?id=${e.currentTarget.value}`);
-          }}
-        >
-          {categoryList.map(categoryItem => (
-            <option key={categoryItem.id} value={categoryItem.id}>
-              {categoryItem.name}
-            </option>
-          ))}
-        </select>
-        <svg viewBox="0 0 48 28" className="RUISelectBox_OpenIcon">
-          <path d="M48 .6H0l24 26.8z" />
-        </svg>
-      </div>
-    ) : null;
-
-  const renderHeader = () =>
-    isMobile ? (
-      <div className="Category_Header GridBookList">{renderSelectBox()}</div>
-    ) : (
-      <PCPageHeader pageTitle={PageTitleText.CATEGORY}>{renderSelectBox()}</PCPageHeader>
-    );
+  const FirstCategory = () => {
+    if (categoryList && categoryList.length > 0) {
+      const selectedItem = categoryList.filter(item => categoryId === item.id)[0];
+      const changeFirstCategory = (clickedCategoryId: number) => {
+        history.push(`/categories?id=${clickedCategoryId}`);
+      };
+      return (
+        <SelectDialog
+          dialogTitle="카테고리"
+          items={categoryList}
+          handleItemClick={changeFirstCategory}
+          selectedItem={selectedItem}
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">
       <HelmetWithTitle titleName={PageTitleText.CATEGORY} />
-      {renderHeader()}
+      <FirstCategory />
       {!isCategoryListFetched || !isValidCategoryId || !isCategoryItemFetched ? (
         <GridBookListSkeleton />
       ) : (

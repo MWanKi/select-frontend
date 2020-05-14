@@ -1,10 +1,11 @@
 import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/core';
+import { Global, CacheProvider } from '@emotion/core';
 import 'intersection-observer';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+
 import { store } from 'app/store';
 import { Actions } from 'app/services/user';
 import { ConnectedRoutes } from 'app/routes';
@@ -17,6 +18,7 @@ import { ViewportIntersectionProvider } from 'hooks/useViewportIntersection';
 
 import { selectIsInApp } from './services/environment/selectors';
 import ResponsiveManager from './ResponsiveManager';
+import { GlobalStyles } from './styles/globals';
 
 // Show browser input focused outline when tab key is pressed
 setTabKeyFocus();
@@ -53,6 +55,7 @@ class App extends React.Component {
             ]}
           />
         )}
+        <Global styles={GlobalStyles} />
         <ResponsiveManager />
         <CacheProvider value={styleCache}>
           <ViewportIntersectionProvider>

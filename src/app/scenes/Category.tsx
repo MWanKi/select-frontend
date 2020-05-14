@@ -58,8 +58,8 @@ const Category: React.FunctionComponent = () => {
         <SelectDialog
           dialogTitle="카테고리"
           items={categoryList}
-          handleItemClick={changeFirstCategory}
           selectedItem={selectedItem}
+          onClickItem={changeFirstCategory}
         />
       );
     }

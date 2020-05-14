@@ -1,11 +1,14 @@
+import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 import React from 'react';
 
 import { toggleBodyScrollable } from 'app/styles/globals';
 import Colors from 'app/styles/colors';
+import hoverStyles from 'app/styles/hover';
 
+type ItemId = number;
 interface SelectItem {
-  id: number;
+  id: ItemId;
   name: string;
 }
 
@@ -13,12 +16,13 @@ interface Props {
   dialogTitle: string;
   items: SelectItem[];
   selectedItem: SelectItem;
-  handleItemClick: any;
+  onClickItem: any;
 }
 
 const DialogHeight = 414;
 const DialogHeaderHeight = 64;
 const SelectIconSize = 20;
+const SelectInnerIconSize = 8;
 
 const SC = {
   DialogWrapper: styled.div`
@@ -55,16 +59,50 @@ const SC = {
       padding-top: 0;
     }
   `,
+  SelectButton: styled.button`
+    ${hoverStyles(
+      css`
+        cursor: pointer;
+      `,
+    )}
+  `,
   SelectIcon: styled.div`
     width: ${SelectIconSize}px;
     height: ${SelectIconSize}px;
     border-radius: ${SelectIconSize}px;
     box-sizing: border-box;
-    background: ${(props: { isSelected: boolean }) =>
-      props.isSelected ? Colors.dodgerblue_40 : 'white'};
-    border: 1px solid
-      ${(props: { isSelected: boolean }) =>
-        props.isSelected ? Colors.dodgerblue_40 : Colors.slategray_20};
+    transition: border-color 0.3s;
+    ${(props: { isSelected: boolean }) => {
+      const { isSelected } = props;
+      return isSelected
+        ? `
+          position: relative;
+          background: ${Colors.dodgerblue_40};
+          border: 1px solid ${Colors.dodgerblue_40};
+          &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate3d(-50%, -50%, 0);
+            width: ${SelectInnerIconSize}px;
+            height: ${SelectInnerIconSize}px;
+            border-radius: ${SelectInnerIconSize}px;
+            background: white;
+          }
+        `
+        : `
+          background: white;
+          border: 1px solid ${Colors.slategray_20};
+        `;
+    }}
+    ${hoverStyles(
+      css`
+        border-color: ${Colors.dodgerblue_40};
+      `,
+      'button',
+    )}
   `,
 };
 
@@ -72,14 +110,17 @@ const SelectDialog: React.FunctionComponent<Props> = ({
   dialogTitle,
   items,
   selectedItem,
-  handleItemClick,
+  onClickItem,
 }: Props) => {
   const [dialogVisible, setDialogVisible] = React.useState(false);
   const toggleDialog = () => {
     setDialogVisible(!dialogVisible);
     toggleBodyScrollable(!dialogVisible);
   };
-
+  const handleItemClick = (event: React.MouseEvent<HTMLButtonElement & { value: ItemId }>) => {
+    toggleDialog();
+    onClickItem(event.currentTarget.value);
+  };
   return (
     <>
       <div>
@@ -99,17 +140,10 @@ const SelectDialog: React.FunctionComponent<Props> = ({
             <SC.SelectList>
               {items.map(item => (
                 <SC.SelectItem key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleItemClick(item.id);
-                    }}
-                  >
-                    <SC.SelectIcon isSelected={selectedItem.id === item.id}>
-                      <span className="a11y">??</span>
-                    </SC.SelectIcon>
+                  <SC.SelectButton type="button" value={item.id} onClick={handleItemClick}>
+                    <SC.SelectIcon isSelected={selectedItem.id === item.id} />
                     {item.name}
-                  </button>
+                  </SC.SelectButton>
                 </SC.SelectItem>
               ))}
             </SC.SelectList>

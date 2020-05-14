@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import React from 'react';
 
 import { toggleBodyScrollable } from 'app/styles/globals';
+import Colors from 'app/styles/colors';
 
 interface SelectItem {
   id: number;
@@ -17,6 +18,7 @@ interface Props {
 
 const DialogHeight = 414;
 const DialogHeaderHeight = 64;
+const SelectIconSize = 20;
 
 const SC = {
   DialogWrapper: styled.div`
@@ -52,6 +54,17 @@ const SC = {
     &:first-of-type {
       padding-top: 0;
     }
+  `,
+  SelectIcon: styled.div`
+    width: ${SelectIconSize}px;
+    height: ${SelectIconSize}px;
+    border-radius: ${SelectIconSize}px;
+    box-sizing: border-box;
+    background: ${(props: { isSelected: boolean }) =>
+      props.isSelected ? Colors.dodgerblue_40 : 'white'};
+    border: 1px solid
+      ${(props: { isSelected: boolean }) =>
+        props.isSelected ? Colors.dodgerblue_40 : Colors.slategray_20};
   `,
 };
 
@@ -92,6 +105,9 @@ const SelectDialog: React.FunctionComponent<Props> = ({
                       handleItemClick(item.id);
                     }}
                   >
+                    <SC.SelectIcon isSelected={selectedItem.id === item.id}>
+                      <span className="a11y">??</span>
+                    </SC.SelectIcon>
                     {item.name}
                   </button>
                 </SC.SelectItem>

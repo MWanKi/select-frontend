@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/core';
+import { css } from '@emotion/core';
 
 import Colors from 'app/styles/colors';
 import {
@@ -8,6 +8,7 @@ import {
   resetAppearance,
   resetFontUnlimited,
 } from 'app/styles/customProperties';
+import { spinnerRotation } from 'app/styles/keyframes';
 
 const colorGray10 = Colors.slategray_10;
 const colorGray20 = Colors.slategray_20;
@@ -24,21 +25,6 @@ const colorBrown10 = Colors.brown_10;
 const colorBrown50 = Colors.brown_50;
 const colorBrown60 = Colors.brown_60;
 
-const SpinnerRotation = keyframes`
-  0% { transform: translate3d(-50%, -50%, 0) rotate(0deg); }
-  5% { transform: translate3d(-50%, -50%, 0) rotate(30deg); }
-  14% { transform: translate3d(-50%, -50%, 0) rotate(60deg); }
-  23% { transform: translate3d(-50%, -50%, 0) rotate(90deg); }
-  32% { transform: translate3d(-50%, -50%, 0) rotate(120deg); }
-  41% { transform: translate3d(-50%, -50%, 0) rotate(150deg); }
-  50% { transform: translate3d(-50%, -50%, 0) rotate(180deg); }
-  59% { transform: translate3d(-50%, -50%, 0) rotate(210deg); }
-  68% { transform: translate3d(-50%, -50%, 0) rotate(240deg); }
-  77% { transform: translate3d(-50%, -50%, 0) rotate(270deg); }
-  86% { transform: translate3d(-50%, -50%, 0) rotate(300deg); }
-  95% { transform: translate3d(-50%, -50%, 0) rotate(330deg); }
-  100% { transform: translate3d(-50%, -50%, 0) rotate(0deg); }
-`;
 export const common = css`
   ${resetAppearance}
   ${resetFontUnlimited}
@@ -168,7 +154,7 @@ export const spinner = css`
     background-position: left top;
     background-repeat: no-repeat;
     background-size: cover;
-    animation: ${SpinnerRotation} 1s step-start forwards infinite;
+    animation: ${spinnerRotation} 1s step-start forwards infinite;
     content: '';
   }
   &::after {

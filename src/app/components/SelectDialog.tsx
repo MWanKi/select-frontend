@@ -5,6 +5,9 @@ import React from 'react';
 import { toggleBodyScrollable } from 'app/styles/globals';
 import Colors from 'app/styles/colors';
 import hoverStyles from 'app/styles/hover';
+import CloseIcon from 'svgs/Close.svg';
+import { resetButton, resetLayout } from 'app/styles/customProperties';
+import { fadeIn, fadeInSlideup } from 'app/styles/keyframes';
 
 type ItemId = number;
 interface SelectItem {
@@ -32,7 +35,17 @@ const SC = {
     z-index: 9999;
     width: 100vw;
     height: 100vh;
+    display: flex;
+    align-items: center;
+  `,
+  DimmedBG: styled.div`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
     background: rgba(0, 0, 0, 0.5);
+    animation: ${fadeIn} 0.3s forwards;
   `,
   Dialog: styled.div`
     width: 320px;
@@ -40,26 +53,74 @@ const SC = {
     background: white;
     border-radius: 3px;
     overflow: hidden;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate3d(-50%, -50%, 0);
+    position: relative;
+    margin: 0 auto;
+    animation: ${fadeInSlideup} 0.3s forwards;
   `,
   DialogHeader: styled.div`
     height: ${DialogHeaderHeight}px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  `,
+  DialogTitle: styled.h1`
+    font-size: 17px;
+    font-weight: 700;
+    color: black;
+  `,
+  CloseButton: styled.button`
+    ${resetButton}
+    width: 24px;
+    height: 24px;
+  `,
+  CloseIcon: styled(CloseIcon)`
+    width: 100%;
+    height: 100%;
+    fill: ${Colors.slategray_30};
+    transition: fill 0.3s;
+    ${hoverStyles(
+      css`
+        fill: ${Colors.dodgerblue_40};
+      `,
+    )}
   `,
   SelectList: styled.ul`
+    ${resetLayout}
     height: ${DialogHeight - DialogHeaderHeight}px;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 12px;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      background-clip: content-box;
+    }
+    &::-webkit-scrollbar-thumb {
+      width: 12px;
+      border: 4px solid transparent;
+      border-radius: 12px;
+      background-color: ${Colors.slategray_30};
+      background-clip: content-box;
+    }
   `,
   SelectItem: styled.li`
-    padding: 12px 20px;
-
+    padding: 12px 0;
     &:first-of-type {
       padding-top: 0;
     }
+    &:last-of-type {
+      padding-bottom: 24px;
+    }
   `,
   SelectButton: styled.button`
+    ${resetButton}
+    width: 100%;
+    text-align: left;
+    padding: 0 20px 0 50px;
+    font-size: 16px;
+    line-height: 24px;
+    color: ${Colors.slategray_100};
+    position: relative;
     ${hoverStyles(
       css`
         cursor: pointer;
@@ -67,6 +128,9 @@ const SC = {
     )}
   `,
   SelectIcon: styled.div`
+    position: absolute;
+    left: 20px;
+    top: 2px;
     width: ${SelectIconSize}px;
     height: ${SelectIconSize}px;
     border-radius: ${SelectIconSize}px;
@@ -76,7 +140,6 @@ const SC = {
       const { isSelected } = props;
       return isSelected
         ? `
-          position: relative;
           background: ${Colors.dodgerblue_40};
           border: 1px solid ${Colors.dodgerblue_40};
           &::after {
@@ -130,12 +193,14 @@ const SelectDialog: React.FunctionComponent<Props> = ({
       </div>
       {dialogVisible && (
         <SC.DialogWrapper>
+          <SC.DimmedBG onClick={toggleDialog} />
           <SC.Dialog>
             <SC.DialogHeader>
-              <h1>{dialogTitle}</h1>
-              <button type="button" onClick={toggleDialog}>
-                닫기
-              </button>
+              <SC.DialogTitle>{dialogTitle}</SC.DialogTitle>
+              <SC.CloseButton type="button" onClick={toggleDialog}>
+                <span className="a11y">닫기</span>
+                <SC.CloseIcon />
+              </SC.CloseButton>
             </SC.DialogHeader>
             <SC.SelectList>
               {items.map(item => (

@@ -49,7 +49,7 @@ const Category: React.FunctionComponent = () => {
   }, [categoryId, page]);
 
   const FirstCategory = () => {
-    if (categoryList && categoryList.length > 0) {
+    if (categoryId && categoryList && categoryList.length > 0) {
       const selectedItem = categoryList.filter(item => categoryId === item.id)[0];
       const changeFirstCategory = (clickedCategoryId: number) => {
         history.push(`/categories?id=${clickedCategoryId}`);

@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,9 @@ import { StarRating } from 'app/services/review/components';
 import { Actions, DefaultTrackingParams } from 'app/services/tracking';
 import { getSectionStringForTracking } from 'app/services/tracking/utils';
 import { thousandsSeperator } from 'app/utils/thousandsSeperator';
+import { resetLayout } from 'app/styles/customProperties';
+
+import GridBookListWrapper from './Wrapper';
 
 interface Props {
   books: Book[];
@@ -25,6 +29,17 @@ interface Props {
   thumbnailLinkType?: ThumbnailLinkType;
   onLinkClick?: (event: React.SyntheticEvent<any>) => any;
 }
+
+const SC = {
+  GridBookListWrapper,
+  GridBookList: styled.ul`
+    ${resetLayout}
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  `,
+};
 
 export const GridBookList: React.FunctionComponent<Props> = (props: Props) => {
   const dispatch = useDispatch();
@@ -134,19 +149,21 @@ export const GridBookList: React.FunctionComponent<Props> = (props: Props) => {
   }, [isNormal, isLarge, isFull]);
 
   return (
-    <ul className={`GridBookList ${isChart ? 'GridBookList-isChart' : ''}`}>
-      {books.map((book, index) => (
-        <li className="GridBookList_Item" key={book.id}>
-          <ConnectedTrackImpression
-            section={getSection()}
-            index={index}
-            id={book.id}
-            misc={miscTracking}
-          >
-            {renderItem(bookWidth, book, getRank(index), index)}
-          </ConnectedTrackImpression>
-        </li>
-      ))}
-    </ul>
+    <SC.GridBookListWrapper>
+      <SC.GridBookList>
+        {books.map((book, index) => (
+          <li className="GridBookList_Item" key={book.id}>
+            <ConnectedTrackImpression
+              section={getSection()}
+              index={index}
+              id={book.id}
+              misc={miscTracking}
+            >
+              {renderItem(bookWidth, book, getRank(index), index)}
+            </ConnectedTrackImpression>
+          </li>
+        ))}
+      </SC.GridBookList>
+    </SC.GridBookListWrapper>
   );
 };

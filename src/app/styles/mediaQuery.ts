@@ -13,6 +13,7 @@ const Media = {
   MINI_PHONE: `(max-width: ${MINI_PHONE_MAX_WIDTH}px)`,
   PHONE: `(max-width: ${PHONE_MAX_WIDTH}px)`,
   PHABLET: `(min-width: ${PHABLET_MIN_WIDTH}px) and (max-width: ${PHABLET_MAX_WIDTH}px)`,
+  PHONE_AND_PHABLET: `(max-width: ${PHABLET_MAX_WIDTH}px)`,
   TABLET: `(min-width: ${TABLET_MIN_WIDTH}px) and (max-width: ${TABLET_MAX_WIDTH}px)`,
   MOBILE: `(max-width: ${MOBILE_MAX_WIDTH}px)`,
   PC: `(min-width: ${PC_MIN_WIDTH}px)`,

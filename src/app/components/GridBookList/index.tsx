@@ -7,13 +7,20 @@ import { useMediaQuery } from 'react-responsive';
 import { ThumbnailLinkType, ThumbnailSize } from 'app/components/BookThumbnail';
 import { DTOBookThumbnail } from 'app/components/DTOBookThumbnail';
 import { ConnectedTrackImpression } from 'app/components/TrackImpression';
-import { ResponsiveSection, BookWidth } from 'app/constants';
+import {
+  ResponsiveSection,
+  BookWidth,
+  MINI_PHONE_MAX_WIDTH,
+  PHONE_MAX_WIDTH,
+  PHABLET_MAX_WIDTH,
+} from 'app/constants';
 import { Book } from 'app/services/book';
 import { StarRating } from 'app/services/review/components';
 import { Actions, DefaultTrackingParams } from 'app/services/tracking';
 import { getSectionStringForTracking } from 'app/services/tracking/utils';
 import { thousandsSeperator } from 'app/utils/thousandsSeperator';
 import { resetLayout } from 'app/styles/customProperties';
+import Media from 'app/styles/mediaQuery';
 
 import GridBookListWrapper from './Wrapper';
 
@@ -38,6 +45,16 @@ const SC = {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
+
+    @media ${Media.MINI_PHONE} {
+      padding: 12px 0;
+    }
+    @media (min-width: ${MINI_PHONE_MAX_WIDTH + 1}px) and (max-width: ${PHONE_MAX_WIDTH - 1}px) {
+      padding: 14px 0;
+    }
+    @media (min-width: ${PHONE_MAX_WIDTH}px) {
+      padding: 16px 0;
+    }
   `,
 };
 

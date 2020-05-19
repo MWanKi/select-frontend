@@ -1,8 +1,9 @@
+import { css } from '@emotion/core';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, LinkProps, useHistory } from 'react-router-dom';
 
-import { GridBookList, HelmetWithTitle, PCPageHeader } from 'app/components';
+import { GridBookList, HelmetWithTitle } from 'app/components';
 import { PageTitleText } from 'app/constants';
 import { GridBookListSkeleton } from 'app/placeholder/BookListPlaceholder';
 import { Actions as categoryActions } from 'app/services/category';
@@ -11,6 +12,10 @@ import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
 import { getPageQuery } from 'app/services/routing/selectors';
 import SelectDialog from 'app/components/SelectDialog';
+import GridBookListWrapper from 'app/components/GridBookList/Wrapper';
+import TabList from 'app/components/TabList';
+import Media from 'app/styles/mediaQuery';
+import SelectBox from 'app/components/SelectBox';
 
 const ItemCountPerPage = 24;
 
@@ -60,16 +65,92 @@ const Category: React.FunctionComponent = () => {
           items={categoryList}
           selectedItem={selectedItem}
           onClickItem={changeFirstCategory}
+          styles={css`
+            @media ${Media.PHONE} {
+              margin-top: 10px;
+            }
+            @media ${Media.PHABLET} {
+              margin-top: 20px;
+            }
+            @media ${Media.TABLET} {
+              margin-top: 30px;
+            }
+            @media ${Media.PC} {
+              margin-top: 40px;
+            }
+          `}
         />
       );
     }
     return null;
   };
 
+  const SecondCategory = () => {
+    if (categoryId && categoryList && categoryList.length > 0) {
+      const selectedItem = categoryList.filter(item => categoryId === item.id)[0];
+      const changeSecondCategory = (clickedCategoryId: number) => {
+        history.push(`/categories?id=${clickedCategoryId}`);
+      };
+      return (
+        <TabList
+          items={categoryList}
+          selectedItem={selectedItem}
+          onClickItem={changeSecondCategory}
+          styles={css`
+            @media ${Media.TABLET} {
+              margin-top: 4px;
+            }
+            @media ${Media.PC} {
+              margin-top: 4px;
+            }
+          `}
+        />
+      );
+    }
+    return null;
+  };
+
+  const CategoryOrder = () => {
+    const orderList = [
+      {
+        name: '인기순',
+        value: 'favorite',
+      },
+      {
+        name: '최신순',
+        value: 'purchase_date',
+      },
+    ];
+    return (
+      <div
+        css={css`
+          padding-bottom: 6px;
+        `}
+      >
+        <SelectBox
+          selectLabel="카테고리 정렬"
+          selectId="CategoryOrder"
+          selectList={orderList}
+          selectedItem={orderList[0]}
+          onChangeSelect={() => {
+            console.log('change!!');
+          }}
+          styles={css`
+            margin-top: 15px;
+          `}
+        />
+      </div>
+    );
+  };
+
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">
       <HelmetWithTitle titleName={PageTitleText.CATEGORY} />
-      <FirstCategory />
+      <GridBookListWrapper>
+        <FirstCategory />
+        <SecondCategory />
+        <CategoryOrder />
+      </GridBookListWrapper>
       {!isCategoryListFetched || !isValidCategoryId || !isCategoryItemFetched ? (
         <GridBookListSkeleton />
       ) : (

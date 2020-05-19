@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css, SerializedStyles } from '@emotion/core';
 import styled from '@emotion/styled';
 import React from 'react';
 
@@ -8,6 +8,7 @@ import hoverStyles from 'app/styles/hover';
 import CloseIcon from 'svgs/Close.svg';
 import { resetButton, resetLayout } from 'app/styles/customProperties';
 import { fadeIn, fadeInSlideup } from 'app/styles/keyframes';
+import ArrowDownIcon from 'svgs/ArrowNoneDashDown.svg';
 
 type ItemId = number;
 interface SelectItem {
@@ -20,6 +21,7 @@ interface Props {
   items: SelectItem[];
   selectedItem: SelectItem;
   onClickItem: any;
+  styles?: SerializedStyles;
 }
 
 const DialogHeight = 414;
@@ -28,6 +30,25 @@ const SelectIconSize = 20;
 const SelectInnerIconSize = 8;
 
 const SC = {
+  ToggleButtonWrapper: styled.div`
+    padding: 10px 0;
+    ${(props: { styles?: SerializedStyles }) => (props.styles ? props.styles : '')}
+  `,
+  ToggleButton: styled.button`
+    ${resetButton}
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+    font-weight: 700;
+    color: ${Colors.slategray_90};
+    line-height: 30px;
+  `,
+  ToggleButtonIcon: styled(ArrowDownIcon)`
+    width: 12px;
+    height: 9px;
+    margin-left: 8px;
+    fill: ${Colors.slategray_40};
+  `,
   DialogWrapper: styled.div`
     position: fixed;
     left: 0;
@@ -174,6 +195,7 @@ const SelectDialog: React.FunctionComponent<Props> = ({
   items,
   selectedItem,
   onClickItem,
+  styles,
 }: Props) => {
   const [dialogVisible, setDialogVisible] = React.useState(false);
   const toggleDialog = () => {
@@ -184,13 +206,14 @@ const SelectDialog: React.FunctionComponent<Props> = ({
     toggleDialog();
     onClickItem(event.currentTarget.value);
   };
+
   return (
     <>
-      <div>
-        <button type="button" onClick={toggleDialog}>
-          {selectedItem.name}
-        </button>
-      </div>
+      <SC.ToggleButtonWrapper styles={styles}>
+        <SC.ToggleButton type="button" onClick={toggleDialog}>
+          {selectedItem.name} <SC.ToggleButtonIcon />
+        </SC.ToggleButton>
+      </SC.ToggleButtonWrapper>
       {dialogVisible && (
         <SC.DialogWrapper>
           <SC.DimmedBG onClick={toggleDialog} />

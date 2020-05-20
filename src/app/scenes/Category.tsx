@@ -1,6 +1,6 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, LinkProps, useHistory } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
 import { getPageQuery } from 'app/services/routing/selectors';
 import SelectDialog from 'app/components/SelectDialog';
-import TabList from 'app/components/TabList';
+import TabList, { SC as TabListSC } from 'app/components/TabList';
 import Media from 'app/styles/mediaQuery';
 import SelectBox from 'app/components/SelectBox';
 
@@ -63,7 +63,7 @@ const Category: React.FunctionComponent = () => {
     }
   }, [categoryId, page]);
 
-  const FirstCategory = () => {
+  const FirstCategory = useCallback(() => {
     if (categoryId && categoryList && categoryList.length > 0) {
       const selectedItem = categoryList.filter(item => categoryId === item.id)[0];
       const changeFirstCategory = (clickedCategoryId: number) => {
@@ -79,30 +79,32 @@ const Category: React.FunctionComponent = () => {
       );
     }
     return null;
-  };
+  }, [categoryList, categoryId]);
 
-  const SecondCategory = () => {
+  const SecondCategory = useCallback(() => {
     if (categoryId && categoryList && categoryList.length > 0) {
-      const selectedItem = categoryList.filter(item => categoryId === item.id)[0];
+      const selectedSecondCategoryItem = categoryList.filter(item => categoryId === item.id)[0];
       const changeSecondCategory = (clickedCategoryId: number) => {
         history.push(`/categories?id=${clickedCategoryId}`);
       };
       return (
         <TabList
           items={categoryList}
-          selectedItem={selectedItem}
+          selectedItem={selectedSecondCategoryItem}
           onClickItem={changeSecondCategory}
           styles={css`
             @media ${Media.MOBILE} {
               margin-left: -20px;
-              padding-left: 20px;
+              ${TabListSC.TabList} {
+                padding-left: 20px;
+              }
             }
           `}
         />
       );
     }
     return null;
-  };
+  }, [categoryList, categoryId]);
 
   const CategoryOrder = () => {
     const orderList = [

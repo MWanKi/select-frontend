@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/core';
 import styled from '@emotion/styled';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Colors from 'app/styles/colors';
 import { resetButton, hideScrollBar } from 'app/styles/customProperties';
@@ -44,12 +44,12 @@ const scrollButtonStyle = css`
     left: 0;
   }
 
-  @media ${Media.PHONE_AND_PHABLET} {
+  @media ${Media.MOBILE} {
     display: none;
   }
 `;
 
-const SC = {
+export const SC = {
   TabListWrapper: styled.div`
     position: relative;
 
@@ -89,7 +89,7 @@ const SC = {
       bottom: -1px;
     }
 
-    @media ${Media.TABLET} and ${Media.PC} {
+    @media ${Media.PC} {
       display: none;
     }
   `,

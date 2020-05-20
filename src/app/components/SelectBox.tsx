@@ -64,13 +64,9 @@ const SelectBox: React.FunctionComponent<Props> = (props: Props) => {
       <label className="a11y" htmlFor={`${selectId}_Select`}>
         {selectLabel}
       </label>
-      <SC.Select id={`${selectId}_Select`} onChange={onChangeSelect}>
+      <SC.Select id={`${selectId}_Select`} onChange={onChangeSelect} value={selectedItem.value}>
         {selectList.map((selectItem, index) => (
-          <option
-            key={`${selectId}_Item-${index}-${selectItem.value}`}
-            value={selectItem.value}
-            selected={selectItem.value === selectedItem.value}
-          >
+          <option key={`${selectId}_Item-${index}-${selectItem.value}`} value={selectItem.value}>
             {selectItem.name}
           </option>
         ))}

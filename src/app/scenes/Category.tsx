@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import styled from '@emotion/styled';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, LinkProps, useHistory } from 'react-router-dom';
@@ -12,12 +13,21 @@ import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
 import { getPageQuery } from 'app/services/routing/selectors';
 import SelectDialog from 'app/components/SelectDialog';
-import GridBookListWrapper from 'app/components/GridBookList/Wrapper';
 import TabList from 'app/components/TabList';
 import Media from 'app/styles/mediaQuery';
 import SelectBox from 'app/components/SelectBox';
 
 const ItemCountPerPage = 24;
+const CategoryWrapper = styled.div`
+  @media ${Media.MOBILE} {
+    padding: 10px 0 0 20px;
+  }
+  @media ${Media.PC} {
+    width: 800px;
+    margin: 0 auto;
+    padding: 40px 0 0 0;
+  }
+`;
 
 const Category: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -65,20 +75,6 @@ const Category: React.FunctionComponent = () => {
           items={categoryList}
           selectedItem={selectedItem}
           onClickItem={changeFirstCategory}
-          styles={css`
-            @media ${Media.PHONE} {
-              margin-top: 10px;
-            }
-            @media ${Media.PHABLET} {
-              margin-top: 20px;
-            }
-            @media ${Media.TABLET} {
-              margin-top: 30px;
-            }
-            @media ${Media.PC} {
-              margin-top: 40px;
-            }
-          `}
         />
       );
     }
@@ -97,11 +93,9 @@ const Category: React.FunctionComponent = () => {
           selectedItem={selectedItem}
           onClickItem={changeSecondCategory}
           styles={css`
-            @media ${Media.TABLET} {
-              margin-top: 4px;
-            }
-            @media ${Media.PC} {
-              margin-top: 4px;
+            @media ${Media.MOBILE} {
+              margin-left: -20px;
+              padding-left: 20px;
             }
           `}
         />
@@ -146,11 +140,11 @@ const Category: React.FunctionComponent = () => {
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">
       <HelmetWithTitle titleName={PageTitleText.CATEGORY} />
-      <GridBookListWrapper>
+      <CategoryWrapper>
         <FirstCategory />
         <SecondCategory />
         <CategoryOrder />
-      </GridBookListWrapper>
+      </CategoryWrapper>
       {!isCategoryListFetched || !isValidCategoryId || !isCategoryItemFetched ? (
         <GridBookListSkeleton />
       ) : (

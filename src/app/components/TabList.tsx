@@ -63,6 +63,7 @@ const SC = {
       left: 0;
       bottom: 0;
     }
+    ${(props: { styles?: SerializedStyles }) => (props.styles ? props.styles : '')}
   `,
   TabListDimmed: styled.div`
     width: 27px;
@@ -173,7 +174,7 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
     onClickItem(event.currentTarget.value);
   };
   return (
-    <SC.TabListWrapper>
+    <SC.TabListWrapper styles={styles}>
       {tabTitle && <p className="a11y">{tabTitle}</p>}
       <SC.TabList>
         {items.map(item => (

@@ -169,6 +169,7 @@ workflows:
             branches:
               only:
                 - master
+                - feature/select-dialog
           dev: true
       - deploy:
           name: deploy-dev

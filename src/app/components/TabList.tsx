@@ -1,6 +1,7 @@
 import { css, SerializedStyles } from '@emotion/core';
 import styled from '@emotion/styled';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import throttle from 'lodash-es/throttle';
 
 import Colors from 'app/styles/colors';
 import { resetButton, hideScrollBar } from 'app/styles/customProperties';
@@ -114,13 +115,18 @@ export const SC = {
     height: 12px;
     fill: ${Colors.slategray_40};
   `,
+  TabListScrollBox: styled.div`
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    ${hideScrollBar}
+  `,
   TabList: styled.ul`
+    display: inline-block;
     margin: 0;
     padding: 0;
     list-style: none;
     white-space: nowrap;
-    overflow: auto;
-    ${hideScrollBar}
   `,
   TabItem: styled.li`
     margin-left: 8px;
@@ -170,35 +176,82 @@ export const SC = {
 const TabList: React.FunctionComponent<Props> = (props: Props) => {
   const { tabTitle, items, selectedItem, onClickItem, styles } = props;
 
+  const tabListScrollBoxRef = useRef<HTMLDivElement>(null);
+  const tabListRef = useRef<HTMLUListElement>(null);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  const throttledResizeFunction = throttle(() => {
+    if (tabListRef.current != null && tabListScrollBoxRef.current != null) {
+      const screenWidth = document.body.clientWidth;
+      setIsScrollable(tabListRef.current.clientWidth > screenWidth);
+      console.log(tabListScrollBoxRef.current.scrollLeft);
+    }
+  }, 100);
+
+  useEffect(() => {
+    window.addEventListener('resize', throttledResizeFunction);
+    throttledResizeFunction();
+    return () => {
+      window.removeEventListener('resize', throttledResizeFunction);
+    };
+  }, []);
+
+  const handleTabListScroll = () => {
+    if (tabListScrollBoxRef.current != null) {
+      console.log(tabListScrollBoxRef.current.scrollLeft);
+    }
+  };
+  const scrollTabList = (distance: number) => {
+    if (tabListScrollBoxRef.current != null) {
+      const { scrollLeft } = tabListScrollBoxRef.current;
+      tabListScrollBoxRef.current.scroll({
+        top: 0,
+        left: scrollLeft + distance,
+        behavior: 'smooth',
+      });
+    }
+  };
+  const handleScrollLeftClick = () => {
+    scrollTabList(400);
+  };
+  const handleScrollRightClick = () => {
+    scrollTabList(-400);
+  };
   const handleItemClick = (event: React.MouseEvent<HTMLButtonElement & { value: ItemId }>) => {
     onClickItem(event.currentTarget.value);
   };
   return (
     <SC.TabListWrapper styles={styles}>
       {tabTitle && <p className="a11y">{tabTitle}</p>}
-      <SC.TabList>
-        {items.map(item => (
-          <SC.TabItem key={`TabList${item.id}`}>
-            <SC.TabButton
-              type="button"
-              value={item.id}
-              onClick={handleItemClick}
-              isSelected={selectedItem.id === item.id}
-            >
-              {item.name}
-            </SC.TabButton>
-          </SC.TabItem>
-        ))}
-      </SC.TabList>
-      <SC.TabListDimmed />
-      <SC.TabListScrollButtonNext>
-        <SC.TabListScrollButtonIcon />
-        <span className="a11y">다음</span>
-      </SC.TabListScrollButtonNext>
-      <SC.TabListScrollButtonPrev>
-        <SC.TabListScrollButtonIcon />
-        <span className="a11y">이전</span>
-      </SC.TabListScrollButtonPrev>
+      <SC.TabListScrollBox ref={tabListScrollBoxRef} onScroll={handleTabListScroll}>
+        <SC.TabList ref={tabListRef}>
+          {items.map(item => (
+            <SC.TabItem key={`TabList${item.id}`}>
+              <SC.TabButton
+                type="button"
+                value={item.id}
+                onClick={handleItemClick}
+                isSelected={selectedItem.id === item.id}
+              >
+                {item.name}
+              </SC.TabButton>
+            </SC.TabItem>
+          ))}
+        </SC.TabList>
+      </SC.TabListScrollBox>
+      {isScrollable && (
+        <>
+          <SC.TabListDimmed />
+          <SC.TabListScrollButtonNext onClick={handleScrollLeftClick}>
+            <SC.TabListScrollButtonIcon />
+            <span className="a11y">다음</span>
+          </SC.TabListScrollButtonNext>
+          <SC.TabListScrollButtonPrev onClick={handleScrollRightClick}>
+            <SC.TabListScrollButtonIcon />
+            <span className="a11y">이전</span>
+          </SC.TabListScrollButtonPrev>
+        </>
+      )}
     </SC.TabListWrapper>
   );
 };

@@ -3,11 +3,11 @@ import { AxiosResponse } from 'axios';
 
 import request from 'app/config/axios';
 import { Book } from 'app/services/book';
-import { Category } from 'app/services/category';
+import { Categories } from 'app/services/category';
 
 export interface CategoryBooksResponse {
   totalCount: number;
-  category: Category;
+  category: Categories;
   books: Book[];
 }
 
@@ -23,7 +23,7 @@ export const requestCategoryBooks = (
     response => camelize<AxiosResponse<CategoryBooksResponse>>(response, { recursive: true }).data,
   );
 
-export const requestCategoryList = (): Promise<Category[]> =>
+export const requestCategoryList = (): Promise<Categories[]> =>
   request({
     url: '/api/categories',
     method: 'GET',

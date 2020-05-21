@@ -5,6 +5,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import smoothscroll from 'smoothscroll-polyfill';
 
 import { store } from 'app/store';
 import { Actions } from 'app/services/user';
@@ -19,6 +20,8 @@ import { ViewportIntersectionProvider } from 'hooks/useViewportIntersection';
 import { selectIsInApp } from './services/environment/selectors';
 import ResponsiveManager from './ResponsiveManager';
 import { GlobalStyles } from './styles/globals';
+
+smoothscroll.polyfill();
 
 // Show browser input focused outline when tab key is pressed
 setTabKeyFocus();

@@ -9,7 +9,7 @@ export const Actions = {
   loadCategoryListRequest: createAction('loadCategoryListRequest'),
 
   loadCategoryListSuccess: createAction<{
-    categoryList: Category[];
+    categoryList: Categories[];
   }>('loadCategoryListSuccess'),
 
   loadCategoryListFailure: createAction('loadCategoryListFailure'),
@@ -43,14 +43,22 @@ export const Actions = {
   }>('loadCategoryBooksFailure'),
 };
 
-export interface Category {
+export interface CategoryItem {
   id: number;
   name: string;
 }
 
+export interface Categories extends CategoryItem {
+  children: CategoryItem[];
+  parent: {
+    id: number;
+    name: string;
+  };
+}
+
 export interface CategoryListState {
   lastSelectedCategoryId?: number;
-  itemList: Category[];
+  itemList: Categories[];
   fetchStatus: FetchStatusFlag;
   isFetched: boolean;
 }

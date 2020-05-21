@@ -5,7 +5,7 @@ import { AxiosResponse } from 'axios';
 import env from 'app/config/env';
 import request from 'app/config/axios';
 import { COUNT_PER_PAGE } from 'app/constants';
-import { Category } from 'app/services/category';
+import { Categories } from 'app/services/category';
 import { BookId, DateDTO, Omit, TextWithLF } from 'app/types';
 import {
   Book,
@@ -65,7 +65,7 @@ export interface BookDetailResponseV2 {
   introImageUrl: string;
   tableOfContents: TextWithLF;
   notices: NoticeResponse[];
-  categories: Category[][];
+  categories: Categories[][];
   publisher: Publisher;
   publishingDate: BookDetailPublishingDate;
   file: BookFile;

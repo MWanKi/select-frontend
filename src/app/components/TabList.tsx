@@ -22,14 +22,18 @@ interface Props {
   styles?: SerializedStyles;
 }
 
+const ScrollDistance = 400;
+const ScrollButtonWidth = 44;
+
 const scrollButtonStyle = css`
   ${resetButton}
-  width: 44px;
-  height: 44px;
+  width: ${ScrollButtonWidth}px;
+  height: ${ScrollButtonWidth}px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.0001) 0%, white 35.68%);
   position: absolute;
   top: 0;
   z-index: 20;
+  transition: opacity 0.3s;
 
   &::before {
     content: '';
@@ -68,7 +72,7 @@ export const SC = {
   `,
   TabListDimmed: styled.div`
     width: 27px;
-    height: 44px;
+    height: ${ScrollButtonWidth}px;
     background: linear-gradient(90deg, rgba(250, 250, 251, 0.0001) 0%, white 100%);
     position: absolute;
     right: 0;
@@ -97,6 +101,16 @@ export const SC = {
   TabListScrollButtonNext: styled.button`
     ${scrollButtonStyle}
     right: 0;
+    ${(props: { isVisible: boolean }) =>
+      props.isVisible
+        ? `
+          opacity: 100;
+          pointer-events: auto;
+        `
+        : `
+          opacity: 0;
+          pointer-events: none;
+        `}
     &::before {
       bottom: -1px;
     }
@@ -105,6 +119,16 @@ export const SC = {
     ${scrollButtonStyle}
     transform: rotate(180deg);
     left: 0;
+    ${(props: { isVisible: boolean }) =>
+      props.isVisible
+        ? `
+          opacity: 100;
+          pointer-events: auto;
+        `
+        : `
+          opacity: 0;
+          pointer-events: none;
+        `}
 
     &::before {
       top: -1px;
@@ -178,29 +202,50 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
 
   const tabListScrollBoxRef = useRef<HTMLDivElement>(null);
   const tabListRef = useRef<HTMLUListElement>(null);
+  const selectedItemRef = useRef<HTMLLIElement>(null);
   const [isScrollable, setIsScrollable] = useState(false);
+  const [isPrevButtonVisible, setIsPrevButtonVisible] = useState(false);
+  const [isNextButtonVisible, setIsNextButtonVisible] = useState(true);
 
   const throttledResizeFunction = throttle(() => {
     if (tabListRef.current != null && tabListScrollBoxRef.current != null) {
       const screenWidth = document.body.clientWidth;
       setIsScrollable(tabListRef.current.clientWidth > screenWidth);
-      console.log(tabListScrollBoxRef.current.scrollLeft);
     }
   }, 100);
 
   useEffect(() => {
     window.addEventListener('resize', throttledResizeFunction);
     throttledResizeFunction();
+    if (selectedItemRef.current != null && tabListScrollBoxRef.current != null) {
+      const { clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
+      const {
+        offsetLeft: selectedItemOffsetLeft,
+        clientWidth: selectedItemWidth,
+      } = selectedItemRef.current;
+      if (selectedItemOffsetLeft > scrollBoxWidth / 2) {
+        const targetLeft = selectedItemOffsetLeft + selectedItemWidth / 2 - scrollBoxWidth / 2;
+        tabListScrollBoxRef.current.scroll({
+          top: 0,
+          left: targetLeft,
+          behavior: 'smooth',
+        });
+      }
+    }
     return () => {
       window.removeEventListener('resize', throttledResizeFunction);
     };
   }, []);
 
-  const handleTabListScroll = () => {
-    if (tabListScrollBoxRef.current != null) {
-      console.log(tabListScrollBoxRef.current.scrollLeft);
+  const handleTabListScroll = throttle(() => {
+    if (tabListScrollBoxRef.current != null && tabListRef.current != null) {
+      const { scrollLeft, clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
+      const { clientWidth: tabListWidth } = tabListRef.current;
+      setIsPrevButtonVisible(scrollLeft > 0);
+      setIsNextButtonVisible(scrollLeft < tabListWidth - scrollBoxWidth);
     }
-  };
+  }, 100);
+
   const scrollTabList = (distance: number) => {
     if (tabListScrollBoxRef.current != null) {
       const { scrollLeft } = tabListScrollBoxRef.current;
@@ -212,10 +257,10 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
     }
   };
   const handleScrollLeftClick = () => {
-    scrollTabList(400);
+    scrollTabList(ScrollDistance);
   };
   const handleScrollRightClick = () => {
-    scrollTabList(-400);
+    scrollTabList(-ScrollDistance);
   };
   const handleItemClick = (event: React.MouseEvent<HTMLButtonElement & { value: ItemId }>) => {
     onClickItem(event.currentTarget.value);
@@ -226,7 +271,10 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
       <SC.TabListScrollBox ref={tabListScrollBoxRef} onScroll={handleTabListScroll}>
         <SC.TabList ref={tabListRef}>
           {items.map(item => (
-            <SC.TabItem key={`TabList${item.id}`}>
+            <SC.TabItem
+              key={`TabList${item.id}`}
+              ref={selectedItem.id === item.id ? selectedItemRef : null}
+            >
               <SC.TabButton
                 type="button"
                 value={item.id}
@@ -242,11 +290,17 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
       {isScrollable && (
         <>
           <SC.TabListDimmed />
-          <SC.TabListScrollButtonNext onClick={handleScrollLeftClick}>
+          <SC.TabListScrollButtonNext
+            onClick={handleScrollLeftClick}
+            isVisible={isNextButtonVisible}
+          >
             <SC.TabListScrollButtonIcon />
             <span className="a11y">다음</span>
           </SC.TabListScrollButtonNext>
-          <SC.TabListScrollButtonPrev onClick={handleScrollRightClick}>
+          <SC.TabListScrollButtonPrev
+            onClick={handleScrollRightClick}
+            isVisible={isPrevButtonVisible}
+          >
             <SC.TabListScrollButtonIcon />
             <span className="a11y">이전</span>
           </SC.TabListScrollButtonPrev>
@@ -256,4 +310,4 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
   );
 };
 
-export default TabList;
+export default React.memo(TabList);

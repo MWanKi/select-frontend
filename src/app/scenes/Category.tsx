@@ -91,20 +91,17 @@ const Category: React.FunctionComponent = () => {
     history.push(`/categories?id=${clickedCategoryId}`);
   };
 
-  const FirstCategory = useCallback(
-    () =>
-      selectedFirstCategory ? (
-        <SelectDialog
-          dialogTitle="카테고리"
-          items={categoryList}
-          selectedItem={selectedFirstCategory}
-          onClickItem={changeCategory}
-        />
-      ) : null,
-    [selectedFirstCategory],
-  );
+  const FirstCategory = () =>
+    selectedFirstCategory ? (
+      <SelectDialog
+        dialogTitle="카테고리"
+        items={categoryList}
+        selectedItem={selectedFirstCategory}
+        onClickItem={changeCategory}
+      />
+    ) : null;
 
-  const SecondCategory = useCallback(() => {
+  const SecondCategory = () => {
     const secondCategoryList = selectedFirstCategory?.children;
     return secondCategoryList && selectedSecondCategory ? (
       <TabList
@@ -121,7 +118,7 @@ const Category: React.FunctionComponent = () => {
         `}
       />
     ) : null;
-  }, [selectedSecondCategory]);
+  };
 
   const orderList = [
     {

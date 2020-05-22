@@ -242,4 +242,4 @@ const SelectDialog: React.FunctionComponent<Props> = ({
   );
 };
 
-export default SelectDialog;
+export default React.memo(SelectDialog);

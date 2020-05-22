@@ -28,6 +28,16 @@ const CategoryWrapper = styled.div`
     padding: 40px 0 0 0;
   }
 `;
+const SortOptionList = [
+  {
+    name: '최신순',
+    value: 'recent',
+  },
+  {
+    name: '인기순',
+    value: 'popular',
+  },
+];
 
 const Category: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -48,6 +58,7 @@ const Category: React.FunctionComponent = () => {
 
   const [selectedFirstCategory, setSelectedFirstCategory] = useState<Categories | null>(null);
   const [selectedSecondCategory, setSelectedSecondCategory] = useState<Categories | null>(null);
+  const [selectedSortOption, setSelectedSortOption] = useState(SortOptionList[0]);
 
   useEffect(() => {
     dispatch(
@@ -60,6 +71,7 @@ const Category: React.FunctionComponent = () => {
 
   useEffect(() => {
     if (isValidCategoryId) {
+      setSelectedSortOption(SortOptionList[0]);
       dispatch(categoryActions.cacheCategoryId({ categoryId }));
       !isCategoryItemFetched &&
         dispatch(categoryActions.loadCategoryBooksRequest({ categoryId, page }));
@@ -91,17 +103,20 @@ const Category: React.FunctionComponent = () => {
     history.push(`/categories?id=${clickedCategoryId}`);
   };
 
-  const FirstCategory = () =>
-    selectedFirstCategory ? (
-      <SelectDialog
-        dialogTitle="카테고리"
-        items={categoryList}
-        selectedItem={selectedFirstCategory}
-        onClickItem={changeCategory}
-      />
-    ) : null;
+  const FirstCategory = useCallback(
+    () =>
+      selectedFirstCategory ? (
+        <SelectDialog
+          dialogTitle="카테고리"
+          items={categoryList}
+          selectedItem={selectedFirstCategory}
+          onClickItem={changeCategory}
+        />
+      ) : null,
+    [selectedFirstCategory],
+  );
 
-  const SecondCategory = () => {
+  const SecondCategory = useCallback(() => {
     const secondCategoryList = selectedFirstCategory?.children;
     return secondCategoryList && selectedSecondCategory ? (
       <TabList
@@ -118,22 +133,14 @@ const Category: React.FunctionComponent = () => {
         `}
       />
     ) : null;
-  };
+  }, [selectedSecondCategory]);
 
-  const orderList = [
-    {
-      name: '최신순',
-      value: 'recent',
-    },
-    {
-      name: '인기순',
-      value: 'popular',
-    },
-  ];
-  const selectedOrder = orderList[0];
   const Sort = useCallback(() => {
-    const handleSelectChange = () => {
-      console.log('change!!');
+    const handleSelectChange = e => {
+      const selectedItem = SortOptionList.filter(
+        optionItem => optionItem.value === e.currentTarget.value,
+      )[0];
+      setSelectedSortOption(selectedItem);
     };
     return (
       <div
@@ -144,8 +151,8 @@ const Category: React.FunctionComponent = () => {
         <SelectBox
           selectLabel="카테고리 정렬"
           selectId="CategoryOrder"
-          selectList={orderList}
-          selectedItem={selectedOrder}
+          selectList={SortOptionList}
+          selectedItem={selectedSortOption}
           onChangeSelect={handleSelectChange}
           styles={css`
             margin-top: 15px;
@@ -153,7 +160,7 @@ const Category: React.FunctionComponent = () => {
         />
       </div>
     );
-  }, [orderList, selectedOrder]);
+  }, [selectedSortOption]);
 
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">

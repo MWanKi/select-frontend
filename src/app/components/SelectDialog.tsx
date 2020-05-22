@@ -1,6 +1,6 @@
 import { css, SerializedStyles } from '@emotion/core';
 import styled from '@emotion/styled';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { toggleBodyScrollable } from 'app/styles/globals';
 import Colors from 'app/styles/colors';
@@ -190,6 +190,8 @@ const SC = {
   `,
 };
 
+const Distance = 50;
+
 const SelectDialog: React.FunctionComponent<Props> = ({
   dialogTitle,
   items,
@@ -197,7 +199,23 @@ const SelectDialog: React.FunctionComponent<Props> = ({
   onClickItem,
   styles,
 }: Props) => {
+  const scrollBoxRef = useRef<HTMLUListElement>(null);
+  const selectedItemRef = useRef<HTMLLIElement>(null);
   const [dialogVisible, setDialogVisible] = React.useState(false);
+  useEffect(() => {
+    if (dialogVisible && scrollBoxRef.current != null && selectedItemRef.current != null) {
+      const { clientHeight: scrollBoxHeight } = scrollBoxRef.current;
+      const { offsetTop } = selectedItemRef.current;
+      if (offsetTop > scrollBoxHeight - Distance) {
+        scrollBoxRef.current.scroll({
+          top: offsetTop - Distance,
+          left: 0,
+          behavior: 'smooth',
+        });
+      }
+    }
+  }, [dialogVisible]);
+
   const toggleDialog = () => {
     setDialogVisible(!dialogVisible);
     toggleBodyScrollable(!dialogVisible);
@@ -225,9 +243,12 @@ const SelectDialog: React.FunctionComponent<Props> = ({
                 <SC.CloseIcon />
               </SC.CloseButton>
             </SC.DialogHeader>
-            <SC.SelectList>
+            <SC.SelectList ref={scrollBoxRef}>
               {items.map(item => (
-                <SC.SelectItem key={item.id}>
+                <SC.SelectItem
+                  key={item.id}
+                  ref={selectedItem.id === item.id ? selectedItemRef : null}
+                >
                   <SC.SelectButton type="button" value={item.id} onClick={handleItemClick}>
                     <SC.SelectIcon isSelected={selectedItem.id === item.id} />
                     {item.name}

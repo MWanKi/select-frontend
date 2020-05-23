@@ -123,6 +123,7 @@ export const Routes: React.SFC<Props> = props => {
             <Route path={RoutePaths.NEW_RELEASE} component={NewReleases} {...props} />
             <Route path={RoutePaths.CHARTS} component={Charts} {...props} />
             <Route path={RoutePaths.COLLECTION} component={Collection} {...props} />
+            <Route path={`${RoutePaths.CATEGORY}/:categoryId`} component={Category} {...props} />
             <Route path={RoutePaths.CATEGORY} component={Category} {...props} />
             <Route path={RoutePaths.MY_SELECT} component={MySelect} {...props} />
             <Route path={RoutePaths.BOOK_DETAIL} component={BookDetail} {...props} />

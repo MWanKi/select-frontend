@@ -1,5 +1,5 @@
 import { replace } from 'connected-react-router';
-import * as qs from 'qs';
+import flatten from 'lodash-es/flatten';
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { FetchErrorFlag } from 'app/constants';
@@ -857,23 +857,20 @@ export function* watchInitializeCategoryId() {
     yield take(Actions.initializeCategoryId.getType());
     const state: RidiSelectState = yield select(s => s);
     const idFromLocalStorage = localStorageManager.load().lastVisitedCategoryId;
-
     const categoryId =
-      ((state.categories.itemList || [])
-        .map((category: Categories) => category.id)
-        .includes(idFromLocalStorage) &&
+      (flatten(
+        (state.categories.itemList || []).map((category: Categories) => [
+          category.id,
+          ...category.children.map((childCategory: Categories) => childCategory.id),
+        ]),
+      ).includes(idFromLocalStorage) &&
         idFromLocalStorage) ||
       state.categories.itemList[0].id;
-
-    const parsedQueryString = qs.parse(state.router.location.search, { ignoreQueryPrefix: true });
-
+    const pathname = `${state.router.location.pathname}/${categoryId}`;
     yield put(
       replace({
         ...state.router.location,
-        search: qs.stringify({
-          ...parsedQueryString,
-          id: categoryId,
-        }),
+        pathname,
       }),
     );
 
@@ -883,7 +880,9 @@ export function* watchInitializeCategoryId() {
 
 export function* watchCacheCategoryId() {
   while (true) {
-    const { categoryId } = yield take(Actions.cacheCategoryId.getType());
+    const {
+      payload: { categoryId },
+    } = yield take(Actions.cacheCategoryId.getType());
     localStorageManager.save({ lastVisitedCategoryId: categoryId });
   }
 }

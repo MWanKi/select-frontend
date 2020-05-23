@@ -19,7 +19,6 @@ interface MenuStateProps {
   solidBackgroundColorRGBString: string;
   currentPathname: string;
   currentSearch: string;
-  lastSelectedCategoryId?: number;
 }
 
 interface Menu {
@@ -51,10 +50,6 @@ const menus: Menu[] = [
     classname: 'Categories',
     pathname: RoutePaths.CATEGORY,
     pathRegExp: /\/categories(\/.+)?/,
-    defaultSearch: {
-      searchKey: 'id',
-      propKeyForValue: 'lastSelectedCategoryId',
-    },
   },
   {
     name: '마이 셀렉트',
@@ -171,7 +166,6 @@ const mapStateToProps = (state: RidiSelectState): MenuStateProps => ({
   solidBackgroundColorRGBString: getSolidBackgroundColorRGBString(state),
   currentPathname: state.router.location.pathname,
   currentSearch: state.router.location.search,
-  lastSelectedCategoryId: state.categories.lastSelectedCategoryId,
 });
 
 export const ConnectedLNB = connect(mapStateToProps)(LNB);

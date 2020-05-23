@@ -2,13 +2,13 @@ import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, LinkProps, useHistory } from 'react-router-dom';
+import { Link, LinkProps, useHistory, useParams } from 'react-router-dom';
 
 import { GridBookList, HelmetWithTitle } from 'app/components';
-import { PageTitleText } from 'app/constants';
+import { PageTitleText, RoutePaths } from 'app/constants';
 import { GridBookListSkeleton } from 'app/placeholder/BookListPlaceholder';
 import { Actions as categoryActions, Categories } from 'app/services/category';
-import { getIdFromLocationSearch, isValidNumber } from 'app/services/category/utils';
+import { isValidNumber } from 'app/services/category/utils';
 import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
 import { getPageQuery } from 'app/services/routing/selectors';
@@ -42,12 +42,11 @@ const SortOptionList = [
 const Category: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const searchParams = useParams<{ categoryId: string }>();
+  const categoryId = Number(searchParams.categoryId);
 
   const isCategoryListFetched = useSelector((state: RidiSelectState) => state.categories.isFetched);
   const categoryList = useSelector((state: RidiSelectState) => state.categories.itemList) || [];
-  const categoryId = useSelector((state: RidiSelectState) =>
-    Number(getIdFromLocationSearch(state.router.location.search)),
-  );
   const category = useSelector((state: RidiSelectState) => state.categoriesById[categoryId]);
   const books = useSelector((state: RidiSelectState) => state.booksById);
   const page = useSelector(getPageQuery);
@@ -100,7 +99,7 @@ const Category: React.FunctionComponent = () => {
   }, [categoryId, categoryList]);
 
   const changeCategory = (clickedCategoryId: number) => {
-    history.push(`/categories?id=${clickedCategoryId}`);
+    history.push(`${RoutePaths.CATEGORY}/${clickedCategoryId}`);
   };
 
   const FirstCategory = useCallback(
@@ -136,9 +135,9 @@ const Category: React.FunctionComponent = () => {
   }, [selectedSecondCategory]);
 
   const Sort = useCallback(() => {
-    const handleSelectChange = e => {
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedItem = SortOptionList.filter(
-        optionItem => optionItem.value === e.currentTarget.value,
+        optionItem => optionItem.value === event.currentTarget.value,
       )[0];
       setSelectedSortOption(selectedItem);
     };

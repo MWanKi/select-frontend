@@ -67,14 +67,13 @@ const Category: React.FunctionComponent = () => {
   useEffect(() => {
     if (isValidCategoryId) {
       dispatch(categoryActions.cacheCategoryId({ categoryId }));
-      !isCategoryItemFetched &&
-        dispatch(
-          categoryActions.loadCategoryBooksRequest({
-            categoryId,
-            page,
-            sort: selectedSortOption.value,
-          }),
-        );
+      dispatch(
+        categoryActions.loadCategoryBooksRequest({
+          categoryId,
+          page,
+          sort: selectedSortOption.value,
+        }),
+      );
     }
   }, [location]);
 

@@ -143,7 +143,6 @@ categoryBooksReducer.on(
           isFetched: true,
         },
       },
-      name: response.category.name,
       itemCount: response.totalCount,
     },
   }),

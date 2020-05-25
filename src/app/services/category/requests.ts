@@ -19,7 +19,7 @@ export const requestCategoryBooks = (
   sort: SortOptionValue,
 ): Promise<CategoryBooksResponse> =>
   request({
-    url: `/books?category=${categoryId}`,
+    url: `/api/books?category=${categoryId}`,
     method: 'GET',
     params: { sort, page },
   }).then(

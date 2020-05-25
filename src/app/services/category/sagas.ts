@@ -21,8 +21,11 @@ import {
 import toast from 'app/utils/toast';
 import showMessageForRequestError from 'app/utils/toastHelper';
 
+import { SortOptionList } from './constants';
+
 export function* loadCategoryList() {
   const data = yield call(requestCategoryList);
+  console.log(data);
   const categories = JSON.parse(`
     [
       {
@@ -867,10 +870,12 @@ export function* watchInitializeCategoryId() {
         idFromLocalStorage) ||
       state.categories.itemList[0].id;
     const pathname = `${state.router.location.pathname}/${categoryId}`;
+    const search = `?sort=${SortOptionList[0].value}`;
     yield put(
       replace({
         ...state.router.location,
         pathname,
+        search,
       }),
     );
 
@@ -890,12 +895,17 @@ export function* watchCacheCategoryId() {
 export function* loadCategoryBooks({
   payload,
 }: ReturnType<typeof Actions.loadCategoryBooksRequest>) {
-  const { page, categoryId } = payload;
+  const { page, categoryId, sort } = payload;
   try {
     if (!isValidPaginationParameter(page)) {
       throw FetchErrorFlag.UNEXPECTED_PAGE_PARAMS;
     }
-    const response: CategoryBooksResponse = yield call(requestCategoryBooks, categoryId, page);
+    const response: CategoryBooksResponse = yield call(
+      requestCategoryBooks,
+      categoryId,
+      page,
+      sort,
+    );
     yield put(BookActions.updateBooks({ books: response.books }));
     yield put(Actions.loadCategoryBooksSuccess({ categoryId, page, response }));
   } catch (error) {

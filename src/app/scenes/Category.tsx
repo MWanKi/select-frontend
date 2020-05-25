@@ -16,6 +16,7 @@ import SelectDialog from 'app/components/SelectDialog';
 import TabList, { SC as TabListSC } from 'app/components/TabList';
 import Media from 'app/styles/mediaQuery';
 import SelectBox from 'app/components/SelectBox';
+import { SortOptionList } from 'app/services/category/constants';
 
 const ItemCountPerPage = 24;
 const CategoryWrapper = styled.div`
@@ -28,22 +29,20 @@ const CategoryWrapper = styled.div`
     padding: 40px 0 0 0;
   }
 `;
-const SortOptionList = [
-  {
-    name: '최신순',
-    value: 'recent',
-  },
-  {
-    name: '인기순',
-    value: 'popular',
-  },
-];
+
+const Sort = styled.div`
+  padding-bottom: 6px;
+`;
 
 const Category: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const searchParams = useParams<{ categoryId: string }>();
   const categoryId = Number(searchParams.categoryId);
+
+  const [selectedFirstCategory, setSelectedFirstCategory] = useState<Categories | null>(null);
+  const [selectedSecondCategory, setSelectedSecondCategory] = useState<Categories | null>(null);
+  const [selectedSortOption, setSelectedSortOption] = useState(SortOptionList[0]);
 
   const isCategoryListFetched = useSelector((state: RidiSelectState) => state.categories.isFetched);
   const categoryList = useSelector((state: RidiSelectState) => state.categories.itemList) || [];
@@ -54,10 +53,6 @@ const Category: React.FunctionComponent = () => {
   const isValidCategoryId = isValidNumber(categoryId);
   const itemCount = category?.itemCount;
   const isCategoryItemFetched = category?.itemListByPage[page]?.isFetched;
-
-  const [selectedFirstCategory, setSelectedFirstCategory] = useState<Categories | null>(null);
-  const [selectedSecondCategory, setSelectedSecondCategory] = useState<Categories | null>(null);
-  const [selectedSortOption, setSelectedSortOption] = useState(SortOptionList[0]);
 
   useEffect(() => {
     dispatch(
@@ -70,14 +65,23 @@ const Category: React.FunctionComponent = () => {
 
   useEffect(() => {
     if (isValidCategoryId) {
-      setSelectedSortOption(SortOptionList[0]);
       dispatch(categoryActions.cacheCategoryId({ categoryId }));
       !isCategoryItemFetched &&
-        dispatch(categoryActions.loadCategoryBooksRequest({ categoryId, page }));
+        dispatch(
+          categoryActions.loadCategoryBooksRequest({
+            categoryId,
+            page,
+            sort: selectedSortOption.value,
+          }),
+        );
     }
-  }, [categoryId, page]);
+  }, [categoryId, page, selectedSortOption]);
 
   useEffect(() => {
+    if (selectedSortOption !== SortOptionList[0]) {
+      setSelectedSortOption(SortOptionList[0]);
+    }
+
     let selectedFirstCategoryItem = null;
     let selectedSecondCategoryItem = null;
     if (isValidCategoryId && categoryList) {
@@ -98,8 +102,17 @@ const Category: React.FunctionComponent = () => {
     setSelectedSecondCategory(selectedSecondCategoryItem);
   }, [categoryId, categoryList]);
 
-  const changeCategory = (clickedCategoryId: number) => {
-    history.push(`${RoutePaths.CATEGORY}/${clickedCategoryId}`);
+  const handleSortOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value: selectedOptionValue } = event.currentTarget;
+    const selectedItem = SortOptionList.filter(
+      optionItem => optionItem.value === selectedOptionValue,
+    )[0];
+    setSelectedSortOption(selectedItem);
+    history.push(`${RoutePaths.CATEGORY}/${categoryId}?sort=${selectedOptionValue}`);
+  };
+
+  const handleCategoryChange = (clickedCategoryId: number) => {
+    history.push(`${RoutePaths.CATEGORY}/${clickedCategoryId}?sort=${SortOptionList[0].value}`);
   };
 
   const FirstCategory = useCallback(
@@ -109,7 +122,7 @@ const Category: React.FunctionComponent = () => {
           dialogTitle="카테고리"
           items={categoryList}
           selectedItem={selectedFirstCategory}
-          onClickItem={changeCategory}
+          onClickItem={handleCategoryChange}
         />
       ) : null,
     [selectedFirstCategory],
@@ -121,7 +134,7 @@ const Category: React.FunctionComponent = () => {
       <TabList
         items={secondCategoryList}
         selectedItem={selectedSecondCategory}
-        onClickItem={changeCategory}
+        onClickItem={handleCategoryChange}
         styles={css`
           @media ${Media.MOBILE} {
             margin-left: -20px;
@@ -134,40 +147,24 @@ const Category: React.FunctionComponent = () => {
     ) : null;
   }, [selectedSecondCategory]);
 
-  const Sort = useCallback(() => {
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedItem = SortOptionList.filter(
-        optionItem => optionItem.value === event.currentTarget.value,
-      )[0];
-      setSelectedSortOption(selectedItem);
-    };
-    return (
-      <div
-        css={css`
-          padding-bottom: 6px;
-        `}
-      >
-        <SelectBox
-          selectLabel="카테고리 정렬"
-          selectId="CategoryOrder"
-          selectList={SortOptionList}
-          selectedItem={selectedSortOption}
-          onChangeSelect={handleSelectChange}
-          styles={css`
-            margin-top: 15px;
-          `}
-        />
-      </div>
-    );
-  }, [selectedSortOption]);
-
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">
       <HelmetWithTitle titleName={PageTitleText.CATEGORY} />
       <CategoryWrapper>
         <FirstCategory />
         <SecondCategory />
-        <Sort />
+        <Sort>
+          <SelectBox
+            selectLabel="카테고리 정렬"
+            selectId="CategoryOrder"
+            selectList={SortOptionList}
+            selectedItem={selectedSortOption}
+            onChangeSelect={handleSortOptionChange}
+            styles={css`
+              margin-top: 15px;
+            `}
+          />
+        </Sort>
       </CategoryWrapper>
       {!isCategoryListFetched || !isValidCategoryId || !isCategoryItemFetched ? (
         <GridBookListSkeleton />

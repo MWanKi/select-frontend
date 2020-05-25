@@ -5,6 +5,8 @@ import { FetchStatusFlag } from 'app/constants';
 import { CategoryBooksResponse } from 'app/services/category/requests';
 import { DefaultCollectionState } from 'app/services/collection';
 
+import { SortOptionValue } from './constants';
+
 export const Actions = {
   loadCategoryListRequest: createAction('loadCategoryListRequest'),
 
@@ -28,6 +30,7 @@ export const Actions = {
   loadCategoryBooksRequest: createAction<{
     categoryId: number;
     page: number;
+    sort: SortOptionValue;
   }>('loadCategoryBooksRequest'),
 
   loadCategoryBooksSuccess: createAction<{

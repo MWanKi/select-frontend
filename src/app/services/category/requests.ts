@@ -5,6 +5,8 @@ import request from 'app/config/axios';
 import { Book } from 'app/services/book';
 import { Categories } from 'app/services/category';
 
+import { SortOptionValue } from './constants';
+
 export interface CategoryBooksResponse {
   totalCount: number;
   category: Categories;
@@ -14,9 +16,10 @@ export interface CategoryBooksResponse {
 export const requestCategoryBooks = (
   categoryId: number,
   page: number,
+  sort: SortOptionValue,
 ): Promise<CategoryBooksResponse> =>
   request({
-    url: `/api/categories/${categoryId}/books`,
+    url: `/books?category=${categoryId}&sort=${sort}`,
     method: 'GET',
     params: { page },
   }).then(

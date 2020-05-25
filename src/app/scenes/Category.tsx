@@ -2,7 +2,7 @@ import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, LinkProps, useHistory, useParams } from 'react-router-dom';
+import { Link, LinkProps, useHistory, useParams, useLocation } from 'react-router-dom';
 
 import { GridBookList, HelmetWithTitle } from 'app/components';
 import { PageTitleText, RoutePaths } from 'app/constants';
@@ -37,6 +37,7 @@ const Sort = styled.div`
 const Category: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const searchParams = useParams<{ categoryId: string }>();
   const categoryId = Number(searchParams.categoryId);
 
@@ -75,7 +76,7 @@ const Category: React.FunctionComponent = () => {
           }),
         );
     }
-  }, [categoryId, page, selectedSortOption]);
+  }, [location]);
 
   useEffect(() => {
     if (selectedSortOption !== SortOptionList[0]) {

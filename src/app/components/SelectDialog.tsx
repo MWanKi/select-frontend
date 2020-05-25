@@ -210,7 +210,6 @@ const SelectDialog: React.FunctionComponent<Props> = ({
         scrollBoxRef.current.scroll({
           top: offsetTop - Distance,
           left: 0,
-          behavior: 'smooth',
         });
       }
     }

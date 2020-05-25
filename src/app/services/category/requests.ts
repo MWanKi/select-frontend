@@ -19,9 +19,9 @@ export const requestCategoryBooks = (
   sort: SortOptionValue,
 ): Promise<CategoryBooksResponse> =>
   request({
-    url: `/books?category=${categoryId}&sort=${sort}`,
+    url: `/books?category=${categoryId}`,
     method: 'GET',
-    params: { page },
+    params: { sort, page },
   }).then(
     response => camelize<AxiosResponse<CategoryBooksResponse>>(response, { recursive: true }).data,
   );

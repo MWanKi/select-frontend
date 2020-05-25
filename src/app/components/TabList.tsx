@@ -182,7 +182,7 @@ export const SC = {
             display: block;
             width: 100%;
             height: 3px;
-            background: ${Colors.slategray_50};
+            background: ${Colors.slategray_40};
             position: absolute;
             left: 0;
             bottom: 0px;
@@ -190,7 +190,7 @@ export const SC = {
           }
         `
         : `
-          font-weight: 400;
+          font-weight: 500;
           color: ${Colors.slategray_50};
         `;
     }}
@@ -228,7 +228,6 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
         tabListScrollBoxRef.current.scroll({
           top: 0,
           left: targetLeft,
-          behavior: 'smooth',
         });
       }
     }

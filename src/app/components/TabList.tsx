@@ -207,16 +207,24 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
   const [isPrevButtonVisible, setIsPrevButtonVisible] = useState(false);
   const [isNextButtonVisible, setIsNextButtonVisible] = useState(true);
 
-  const throttledResizeFunction = throttle(() => {
+  const handleScreenResize = throttle(() => {
     if (tabListRef.current != null && tabListScrollBoxRef.current != null) {
       const screenWidth = document.body.clientWidth;
       setIsScrollable(tabListRef.current.clientWidth > screenWidth);
     }
   }, 100);
 
+  const handleTabListScroll = throttle(() => {
+    if (tabListScrollBoxRef.current != null && tabListRef.current != null) {
+      const { scrollLeft, clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
+      const { clientWidth: tabListWidth } = tabListRef.current;
+      setIsPrevButtonVisible(scrollLeft > 0);
+      setIsNextButtonVisible(scrollLeft < tabListWidth - scrollBoxWidth);
+    }
+  }, 100);
+
   useEffect(() => {
-    window.addEventListener('resize', throttledResizeFunction);
-    throttledResizeFunction();
+    window.addEventListener('resize', handleScreenResize);
     if (selectedItemRef.current != null && tabListScrollBoxRef.current != null) {
       const { clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
       const {
@@ -232,18 +240,14 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
       }
     }
     return () => {
-      window.removeEventListener('resize', throttledResizeFunction);
+      window.removeEventListener('resize', handleScreenResize);
     };
   }, []);
 
-  const handleTabListScroll = throttle(() => {
-    if (tabListScrollBoxRef.current != null && tabListRef.current != null) {
-      const { scrollLeft, clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
-      const { clientWidth: tabListWidth } = tabListRef.current;
-      setIsPrevButtonVisible(scrollLeft > 0);
-      setIsNextButtonVisible(scrollLeft < tabListWidth - scrollBoxWidth);
-    }
-  }, 100);
+  useEffect(() => {
+    handleScreenResize();
+    handleTabListScroll();
+  }, [items]);
 
   const scrollTabList = (distance: number) => {
     if (tabListScrollBoxRef.current != null) {

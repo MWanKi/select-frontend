@@ -1,13 +1,13 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, LinkProps, useHistory, useParams, useLocation } from 'react-router-dom';
 
 import { GridBookList, HelmetWithTitle } from 'app/components';
 import { PageTitleText, RoutePaths } from 'app/constants';
 import { GridBookListSkeleton } from 'app/placeholder/BookListPlaceholder';
-import { Actions as categoryActions, Categories } from 'app/services/category';
+import { Actions as categoryActions, Categories, CategoryItem } from 'app/services/category';
 import { isValidNumber } from 'app/services/category/utils';
 import { RidiSelectState } from 'app/store';
 import { Pagination } from 'app/components/Pagination';
@@ -42,7 +42,10 @@ const Category: React.FunctionComponent = () => {
   const categoryId = Number(searchParams.categoryId);
 
   const [selectedFirstCategory, setSelectedFirstCategory] = useState<Categories | null>(null);
-  const [selectedSecondCategory, setSelectedSecondCategory] = useState<Categories | null>(null);
+  const [selectedSecondCategoryList, setSelectedSecondCategoryList] = useState<
+    CategoryItem[] | null
+  >(null);
+  const [selectedSecondCategory, setSelectedSecondCategory] = useState<CategoryItem | null>(null);
   const [selectedSortOption, setSelectedSortOption] = useState(SortOptionList[0]);
 
   const isCategoryListFetched = useSelector((state: RidiSelectState) => state.categories.isFetched);
@@ -54,6 +57,11 @@ const Category: React.FunctionComponent = () => {
   const isValidCategoryId = isValidNumber(categoryId);
   const itemCount = category?.itemCount;
   const isCategoryItemFetched = category?.itemListByPage[page]?.isFetched;
+  const resetSort = () => {
+    if (selectedSortOption !== SortOptionList[0]) {
+      setSelectedSortOption(SortOptionList[0]);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -78,11 +86,10 @@ const Category: React.FunctionComponent = () => {
   }, [location]);
 
   useEffect(() => {
-    if (selectedSortOption !== SortOptionList[0]) {
-      setSelectedSortOption(SortOptionList[0]);
-    }
+    resetSort();
 
     let selectedFirstCategoryItem = null;
+    let selectedSecodeCategories = null;
     let selectedSecondCategoryItem = null;
     if (isValidCategoryId && categoryList) {
       categoryList.forEach(firstCategoryItem => {
@@ -93,12 +100,14 @@ const Category: React.FunctionComponent = () => {
         secondCategoryList.forEach(secondCategoryItem => {
           if (secondCategoryItem.id === categoryId) {
             selectedFirstCategoryItem = firstCategoryItem;
+            selectedSecodeCategories = secondCategoryList;
             selectedSecondCategoryItem = secondCategoryItem;
           }
         });
       });
     }
     setSelectedFirstCategory(selectedFirstCategoryItem);
+    setSelectedSecondCategoryList(selectedSecodeCategories);
     setSelectedSecondCategory(selectedSecondCategoryItem);
   }, [categoryId, categoryList]);
 
@@ -115,47 +124,37 @@ const Category: React.FunctionComponent = () => {
     history.push(`${RoutePaths.CATEGORY}/${clickedCategoryId}?sort=${SortOptionList[0].value}`);
   };
 
-  const FirstCategory = useCallback(
-    () =>
-      selectedFirstCategory ? (
-        <SelectDialog
-          dialogTitle="카테고리"
-          items={categoryList}
-          selectedItem={selectedFirstCategory}
-          onClickItem={handleCategoryChange}
-        />
-      ) : null,
-    [selectedFirstCategory],
-  );
-
-  const SecondCategory = useCallback(() => {
-    const secondCategoryList = selectedFirstCategory?.children;
-    return secondCategoryList && selectedSecondCategory ? (
-      <TabList
-        items={secondCategoryList}
-        selectedItem={selectedSecondCategory}
-        onClickItem={handleCategoryChange}
-        styles={css`
-          @media ${Media.MOBILE} {
-            margin-left: -20px;
-            ${TabListSC.TabList} {
-              padding-left: 20px;
-            }
-          }
-        `}
-      />
-    ) : null;
-  }, [selectedSecondCategory]);
-
   return (
     <main className="SceneWrapper SceneWrapper_WithGNB SceneWrapper_WithLNB">
       <HelmetWithTitle titleName={PageTitleText.CATEGORY} />
       <CategoryWrapper>
-        <FirstCategory />
-        <SecondCategory />
+        {selectedFirstCategory ? (
+          <SelectDialog
+            dialogTitle="1차 카테고리"
+            items={categoryList}
+            selectedItem={selectedFirstCategory}
+            onClickItem={handleCategoryChange}
+          />
+        ) : null}
+        {selectedSecondCategoryList && selectedSecondCategory ? (
+          <TabList
+            tabTitle="2차 카테고리"
+            items={selectedSecondCategoryList}
+            selectedItem={selectedSecondCategory}
+            onClickItem={handleCategoryChange}
+            styles={css`
+              @media ${Media.MOBILE} {
+                margin-left: -20px;
+                ${TabListSC.TabList} {
+                  padding-left: 20px;
+                }
+              }
+            `}
+          />
+        ) : null}
         <Sort>
           <SelectBox
-            selectLabel="카테고리 정렬"
+            selectLabel="카테고리 도서 정렬"
             selectId="CategoryOrder"
             selectList={SortOptionList}
             selectedItem={selectedSortOption}

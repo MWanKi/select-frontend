@@ -139,6 +139,10 @@ export const SC = {
     width: 10px;
     height: 12px;
     fill: ${Colors.slategray_40};
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate3d(0, -50%, 0);
     transition: fill 0.2s;
 
     ${hoverStyles(
@@ -218,14 +222,14 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
   const tabListScrollBoxRef = useRef<HTMLDivElement>(null);
   const tabListRef = useRef<HTMLUListElement>(null);
   const selectedItemRef = useRef<HTMLLIElement>(null);
+
   const [isScrollable, setIsScrollable] = useState(false);
   const [isPrevButtonVisible, setIsPrevButtonVisible] = useState(false);
   const [isNextButtonVisible, setIsNextButtonVisible] = useState(true);
 
   const handleScreenResize = throttle(() => {
     if (tabListRef.current != null && tabListScrollBoxRef.current != null) {
-      const screenWidth = document.body.clientWidth;
-      setIsScrollable(tabListRef.current.clientWidth > screenWidth);
+      setIsScrollable(tabListRef.current.clientWidth > tabListScrollBoxRef.current.clientWidth);
     }
   }, 100);
 
@@ -240,24 +244,29 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
 
   useEffect(() => {
     window.addEventListener('resize', handleScreenResize);
+    return () => {
+      window.removeEventListener('resize', handleScreenResize);
+    };
+  }, []);
+
+  useEffect(() => {
     if (selectedItemRef.current != null && tabListScrollBoxRef.current != null) {
       const { clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
       const {
         offsetLeft: selectedItemOffsetLeft,
         clientWidth: selectedItemWidth,
       } = selectedItemRef.current;
-      if (selectedItemOffsetLeft > scrollBoxWidth / 2) {
-        const targetLeft = selectedItemOffsetLeft + selectedItemWidth / 2 - scrollBoxWidth / 2;
-        tabListScrollBoxRef.current.scroll({
-          top: 0,
-          left: targetLeft,
-        });
-      }
+      const targetLeft =
+        selectedItemOffsetLeft > scrollBoxWidth / 2
+          ? selectedItemOffsetLeft + selectedItemWidth / 2 - scrollBoxWidth / 2
+          : 0;
+      tabListScrollBoxRef.current.scroll({
+        top: 0,
+        left: targetLeft,
+        behavior: 'smooth',
+      });
     }
-    return () => {
-      window.removeEventListener('resize', handleScreenResize);
-    };
-  }, []);
+  }, [selectedItem]);
 
   useEffect(() => {
     handleScreenResize();

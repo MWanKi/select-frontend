@@ -82,7 +82,7 @@ const SC = {
   `,
   DialogHeader: styled.div`
     height: ${DialogHeaderHeight}px;
-    padding: 0 20px;
+    padding: 0 16px 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -94,8 +94,9 @@ const SC = {
   `,
   CloseButton: styled.button`
     ${resetButton}
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 2px;
     transition: background ${TransitionDuration}s;
 
     ${hoverStyles(
@@ -106,8 +107,8 @@ const SC = {
     )}
   `,
   CloseIcon: styled(CloseIcon)`
-    width: 100%;
-    height: 100%;
+    width: 24px;
+    height: 24px;
     fill: ${Colors.slategray_30};
     transition: fill ${TransitionDuration}s;
     ${hoverStyles(

@@ -99,18 +99,16 @@ export const Routes: React.SFC<Props> = props => {
       <ConnectedAppManager>
         <Route
           render={({ location }) =>
-            (!props.isRidiApp || inAppGnbRoutes.includes(location.pathname as RoutePaths)) && (
-              <ConnectedGNB />
-            )
+            (!props.isRidiApp ||
+              location.pathname.includes(RoutePaths.CATEGORY) ||
+              inAppGnbRoutes.includes(location.pathname as RoutePaths)) && <ConnectedGNB />
           }
         />
         <Route
-          render={({ location }) => {
-            const visibleLNB =
-              location.pathname.includes(RoutePaths.CATEGORY) ||
-              LNBRoutes.includes(location.pathname as RoutePaths);
-            return visibleLNB ? <ConnectedLNB /> : null;
-          }}
+          render={({ location }) =>
+            (location.pathname.includes(RoutePaths.CATEGORY) ||
+              LNBRoutes.includes(location.pathname as RoutePaths)) && <ConnectedLNB />
+          }
         />
         <React.Suspense fallback={<PageLoadingSpinner />}>
           <Switch>

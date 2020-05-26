@@ -238,7 +238,7 @@ const TabList: React.FunctionComponent<Props> = (props: Props) => {
       const { scrollLeft, clientWidth: scrollBoxWidth } = tabListScrollBoxRef.current;
       const { clientWidth: tabListWidth } = tabListRef.current;
       setIsPrevButtonVisible(scrollLeft > 0);
-      setIsNextButtonVisible(scrollLeft < tabListWidth - scrollBoxWidth);
+      setIsNextButtonVisible(scrollLeft < tabListWidth - scrollBoxWidth - 20);
     }
   }, 100);
 

@@ -7,6 +7,7 @@ import Colors from 'app/styles/colors';
 import { resetButton, hideScrollBar } from 'app/styles/customProperties';
 import ArrowIcon from 'svgs/ArrowNoneDashRight.svg';
 import Media from 'app/styles/mediaQuery';
+import hoverStyles from 'app/styles/hover';
 
 type ItemId = number;
 interface TabItem {
@@ -138,6 +139,14 @@ export const SC = {
     width: 10px;
     height: 12px;
     fill: ${Colors.slategray_40};
+    transition: fill 0.2s;
+
+    ${hoverStyles(
+      css`
+        fill: ${Colors.slategray_60};
+      `,
+      'button',
+    )}
   `,
   TabListScrollBox: styled.div`
     margin: 0;
@@ -171,6 +180,7 @@ export const SC = {
     line-height: 15px;
     padding: 15px 4px;
     position: relative;
+    transition: background 0.2s;
     ${(props: { isSelected: boolean }) => {
       const { isSelected } = props;
       return isSelected
@@ -194,6 +204,11 @@ export const SC = {
           color: ${Colors.slategray_50};
         `;
     }}
+    ${hoverStyles(
+      css`
+        background: rgba(0, 0, 0, 0.05);
+      `,
+    )}
   `,
 };
 

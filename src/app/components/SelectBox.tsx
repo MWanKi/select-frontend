@@ -1,10 +1,11 @@
-import { SerializedStyles } from '@emotion/core';
+import { SerializedStyles, css } from '@emotion/core';
 import React from 'react';
 import styled from '@emotion/styled';
 
 import { resetAppearance } from 'app/styles/customProperties';
 import Colors from 'app/styles/colors';
 import ArrowIcon from 'svgs/ArrowTriangleDown.svg';
+import hoverStyles from 'app/styles/hover';
 
 interface SelectItem {
   name: string;
@@ -41,9 +42,16 @@ const SC = {
     position: relative;
     border: 1px solid ${Colors.slategray_20};
     border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
     &::-ms-expand {
       display: none;
     }
+    ${hoverStyles(
+      css`
+        background: rgba(0, 0, 0, 0.05);
+      `,
+    )}
   `,
   SelectIcon: styled(ArrowIcon)`
     width: 10px;

@@ -130,7 +130,7 @@ const Category: React.FunctionComponent = () => {
       <CategoryWrapper>
         {selectedFirstCategory ? (
           <SelectDialog
-            dialogTitle="1차 카테고리"
+            dialogTitle="카테고리"
             items={categoryList}
             selectedItem={selectedFirstCategory}
             onClickItem={handleCategoryChange}

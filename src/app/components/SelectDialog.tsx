@@ -26,8 +26,10 @@ interface Props {
 
 const DialogHeight = 414;
 const DialogHeaderHeight = 64;
+const SelectButtonVerticalPadding = 12;
 const SelectIconSize = 20;
 const SelectInnerIconSize = 8;
+const TransitionDuration = 0.2;
 
 const SC = {
   ToggleButtonWrapper: styled.div`
@@ -66,7 +68,7 @@ const SC = {
     left: 0;
     top: 0;
     background: rgba(0, 0, 0, 0.5);
-    animation: ${fadeIn} 0.3s forwards;
+    animation: ${fadeIn} ${TransitionDuration}s forwards;
   `,
   Dialog: styled.div`
     width: 320px;
@@ -76,7 +78,7 @@ const SC = {
     overflow: hidden;
     position: relative;
     margin: 0 auto;
-    animation: ${fadeInSlideup} 0.3s forwards;
+    animation: ${fadeInSlideup} ${TransitionDuration}s forwards;
   `,
   DialogHeader: styled.div`
     height: ${DialogHeaderHeight}px;
@@ -94,16 +96,25 @@ const SC = {
     ${resetButton}
     width: 24px;
     height: 24px;
+    transition: background ${TransitionDuration}s;
+
+    ${hoverStyles(
+      css`
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.05);
+      `,
+    )}
   `,
   CloseIcon: styled(CloseIcon)`
     width: 100%;
     height: 100%;
     fill: ${Colors.slategray_30};
-    transition: fill 0.3s;
+    transition: fill ${TransitionDuration}s;
     ${hoverStyles(
       css`
-        fill: ${Colors.dodgerblue_40};
+        fill: ${Colors.slategray_50};
       `,
+      'button',
     )}
   `,
   SelectList: styled.ul`
@@ -125,38 +136,38 @@ const SC = {
     }
   `,
   SelectItem: styled.li`
-    padding: 12px 0;
-    &:first-of-type {
-      padding-top: 0;
-    }
     &:last-of-type {
       padding-bottom: 24px;
     }
   `,
   SelectButton: styled.button`
     ${resetButton}
+    background: white;
     width: 100%;
     text-align: left;
-    padding: 0 20px 0 50px;
+    padding: ${SelectButtonVerticalPadding}px 20px ${SelectButtonVerticalPadding}px 50px;
     font-size: 16px;
     line-height: 24px;
     color: ${Colors.slategray_100};
     position: relative;
+    transition: background ${TransitionDuration}s;
+
     ${hoverStyles(
       css`
         cursor: pointer;
+        background: rgba(0, 0, 0, 0.05);
       `,
     )}
   `,
   SelectIcon: styled.div`
     position: absolute;
     left: 20px;
-    top: 2px;
+    top: ${SelectButtonVerticalPadding + 2}px;
     width: ${SelectIconSize}px;
     height: ${SelectIconSize}px;
     border-radius: ${SelectIconSize}px;
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    transition: border-color ${TransitionDuration}s;
     ${(props: { isSelected: boolean }) => {
       const { isSelected } = props;
       return isSelected
@@ -181,16 +192,10 @@ const SC = {
           border: 1px solid ${Colors.slategray_20};
         `;
     }}
-    ${hoverStyles(
-      css`
-        border-color: ${Colors.dodgerblue_40};
-      `,
-      'button',
-    )}
   `,
 };
 
-const Distance = 50;
+const Distance = 64;
 
 const SelectDialog: React.FunctionComponent<Props> = ({
   dialogTitle,

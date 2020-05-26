@@ -105,9 +105,12 @@ export const Routes: React.SFC<Props> = props => {
           }
         />
         <Route
-          render={({ location }) =>
-            LNBRoutes.includes(location.pathname as RoutePaths) && <ConnectedLNB />
-          }
+          render={({ location }) => {
+            const visibleLNB =
+              location.pathname.includes(RoutePaths.CATEGORY) ||
+              LNBRoutes.includes(location.pathname as RoutePaths);
+            return visibleLNB ? <ConnectedLNB /> : null;
+          }}
         />
         <React.Suspense fallback={<PageLoadingSpinner />}>
           <Switch>
